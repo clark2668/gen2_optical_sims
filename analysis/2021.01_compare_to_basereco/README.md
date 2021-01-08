@@ -17,7 +17,7 @@ We do the study for file `000000`.
 
 The HDF5 files stored in baseline reco don't included some necessary variables like `SplineMPEMUEXDifferential`--so I wrote a script to rebook those. To do that, run:
 
-`python do_rebook.py -i /path/to/baseproc.i3 -p rebook_000000_`
+`python do_rebook.py -i /path/to/11900_MUONGUN_.000000_Sunflower_240m_recos.i3.bz2 -p rebook_000000_`
 
 The output of the rebooking for file `000000` is at `rebook_000000_.GEN2.hdf5`.
 
@@ -25,7 +25,7 @@ The output of the rebooking for file `000000` is at `rebook_000000_.GEN2.hdf5`.
 
 To re-run the reco, we use `Gen2_Simple_Recos.py`. Use like:
 
-`ulimit -s 131072; ^CGen2_Simple_Recos.py -g 240m_sunflower_gcd.i3.bz2 -p redo_00000_ -i 11900_MUONGUN_.000000_Sunflower_240m_calibrated.i3.bz2`
+`ulimit -s 131072; Gen2_Simple_Recos.py -g 240m_sunflower_gcd.i3.bz2 -p redo_00000_ -i /path/to/11900_MUONGUN_.000000_Sunflower_240m_calibrated.i3.bz2`
 
 Note that we use the `ulimit` command to increase the size of the stack, otherwise `LineFit` in combo has a stack overflow issues that causes a crash.
 
