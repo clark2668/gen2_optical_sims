@@ -7,7 +7,7 @@ We need a script to extract the PSF function from the hdf5 file. We need to have
 ## Results
 
 Tabulate angular error
-![](angular error.png)
+![](angular_error.png)
 
 Tabulated angular error with the King/Moffat fits
 ![](angular_error_with_fits.png)

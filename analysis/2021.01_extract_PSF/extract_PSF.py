@@ -80,7 +80,7 @@ for ci in (0, 10, 15, 30, 39):
 			*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
 		)
 	)
-fig.savefig('angular error.png')
+fig.savefig('angular_error.png')
 plt.close(fig)
 del fig, ax
 
