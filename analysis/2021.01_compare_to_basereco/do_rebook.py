@@ -7,6 +7,7 @@ args = parser.parse_args()
 
 from I3Tray import I3Tray
 from icecube import icetray, dataio, dataclasses, hdfwriter, spline_reco
+from icecube.common_variables import direct_hits
 
 tray = I3Tray()
 tray.Add("I3Reader", "read", FileNameList = [args.infile])
@@ -27,7 +28,8 @@ hdf_keys = [
 	'SplineMPE_default',
 	'SplineMPEMuEXDifferential',
 	'SplineMPE_recommended',
-	'SplineMPE_recommendedFitParams'
+	'SplineMPE_recommendedFitParams',
+	'SplineMPE_recommendedDirectHitsC'
 ]
 
 sub_event_streams = ["IC86_SMT8", "GEN2"]
