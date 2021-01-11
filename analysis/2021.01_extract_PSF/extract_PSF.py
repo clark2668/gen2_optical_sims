@@ -13,9 +13,6 @@ import autograd.numpy as n
 import os
 import h5py
 
-# f = h5py.File('redo_000000.GEN2.hdf5', 'r')
-# print(f.keys())
-
 @memoize
 def load_dataset(hdf_fname):
 	dfs = {}
