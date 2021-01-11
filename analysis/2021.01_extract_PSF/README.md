@@ -2,7 +2,7 @@
 ## About
 We need a script to extract the PSF function from the hdf5 file. We need to have the Gen2 tool installed. We run like:
 
-`python extract_PSF.py`
+`python extract_PSF.py summary_of_recos.hdf5`
 
 ## Results
 
