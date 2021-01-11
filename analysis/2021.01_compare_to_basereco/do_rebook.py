@@ -1,7 +1,7 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i","--infile",type=str,help="Input File",required=True,dest="infile")
+parser.add_argument("-i","--infile",type=str,help="Input File",required=True,dest="infile",nargs='+')
 parser.add_argument("-p","--out-prefix",type=str,help="Prefix for output files",required=True,dest="outprefix")
 args = parser.parse_args()
 
@@ -10,7 +10,7 @@ from icecube import icetray, dataio, dataclasses, hdfwriter, spline_reco
 from icecube.common_variables import direct_hits
 
 tray = I3Tray()
-tray.Add("I3Reader", "read", FileNameList = [args.infile])
+tray.Add("I3Reader", "read", FileNameList = args.infile)
 
 hdf_keys = [
 	'I3EventHeader',
