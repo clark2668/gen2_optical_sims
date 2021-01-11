@@ -6,7 +6,7 @@ parser.add_argument("-p","--out-prefix",type=str,help="Prefix for output files",
 args = parser.parse_args()
 
 from I3Tray import I3Tray
-from icecube import icetray, dataio, dataclasses, hdfwriter
+from icecube import icetray, dataio, dataclasses, hdfwriter, spline_reco
 
 tray = I3Tray()
 tray.Add("I3Reader", "read", FileNameList = [args.infile])
@@ -17,6 +17,7 @@ hdf_keys = [
 	'NuGPrimary',
 	'MostEnergeticMuon',
 	'MCMuon',
+	'MuonEffectiveArea',
 	'LineFit',
 	'SPEFitSingle',
 	'SPEFit8',
@@ -26,6 +27,7 @@ hdf_keys = [
 	'SplineMPE_default',
 	'SplineMPEMuEXDifferential',
 	'SplineMPE_recommended',
+	'SplineMPE_recommendedFitParams'
 ]
 
 sub_event_streams = ["IC86_SMT8", "GEN2"]
