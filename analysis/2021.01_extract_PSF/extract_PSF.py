@@ -16,6 +16,7 @@ import h5py
 import argparse
 parser = argparse.ArgumentParser() 
 parser.add_argument("-n",type=str,help="geom name, e.g. darren", required=False, dest='geom', default='standard')
+parser.add_argument("-p",type=bool,help="make plots?", required=False, dest='do_plots', default=False)
 args = parser.parse_args()
 the_geom = args.geom
 the_file = 'data_sunflower_{}.hdf5'.format(the_geom)
@@ -70,25 +71,25 @@ print(dats.describe())
 bins = [np.linspace(3, 8, 21), np.linspace(-1, 1, 41), np.linspace(0, 90**(1./2), 101)**2]
 counts = np.histogramdd(np.vstack((np.log10(dats['energy']), dats['cos_zenith'], dats['opening_angle'])).T, bins=bins)[0]
 
-fig, ax = plt.subplots(1,1, figsize=(8,5))
-
-# plot some slices
-ei = 5
-for ci in (0, 10, 15, 30, 39):
-	y = counts[ei,ci,:].cumsum()
-	ax.plot(*plotting.stepped_path(bins[2], y/y[-1]), label='({:.2f}, {:.2f}]'.format(*bins[1][ci:ci+2]))
-	ax.set_xlim([0,4])
-	ax.set_xlabel(r'Angular error $\Psi_{\max}$ (degree)')
-	ax.set_ylabel(r'$P(\Psi < \Psi_{\max})$')
-	ax.legend(title=r'$\cos(\theta_{\rm zenith})$')
-	ax.set_title(
-		r'$E_{{\mu}} \in \rm [{}, {})$'.format(
-			*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
+if args.do_plots:
+	fig, ax = plt.subplots(1,1, figsize=(8,5))
+	# plot some slices
+	ei = 5
+	for ci in (0, 10, 15, 30, 39):
+		y = counts[ei,ci,:].cumsum()
+		ax.plot(*plotting.stepped_path(bins[2], y/y[-1]), label='({:.2f}, {:.2f}]'.format(*bins[1][ci:ci+2]))
+		ax.set_xlim([0,4])
+		ax.set_xlabel(r'Angular error $\Psi_{\max}$ (degree)')
+		ax.set_ylabel(r'$P(\Psi < \Psi_{\max})$')
+		ax.legend(title=r'$\cos(\theta_{\rm zenith})$')
+		ax.set_title(
+			r'$E_{{\mu}} \in \rm [{}, {})$'.format(
+				*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
+			)
 		)
-	)
-fig.savefig('angular_error_{}.png'.format(the_geom))
-plt.close(fig)
-del fig, ax
+	fig.savefig('angular_error_{}.png'.format(the_geom))
+	plt.close(fig)
+	del fig, ax
 
 def slicemultiply(A,B,p):
 	sa = A.shape
@@ -254,21 +255,22 @@ def fit_psf(bins, counts, nknots=(7,10), smooth=1e1):
 print("About to fit PSFs")
 splines = fit_psf(bins, counts, smooth=1)
 
-# and now make plots
-x = np.linspace(-1, 1, 101)
-fig, axes = plt.subplots(2,1, sharex=True)
-for i in range(2):
-	spl = splines[i]
-	for loge in 3, 4, 5, 6:
-		basis = splinebasis([[loge], x], spl['knots'], spl['order'])
-		axes.flat[i].plot(x, grideval(basis, spl['coefficients']).T, label='$10^{{{:.0f}}}$'.format(loge))
-axes.flat[1].set_xlabel(r'$\cos\theta_{\rm zenith}$')
-axes.flat[1].set_ylabel(r'$\log_{10}(\gamma-1)$')
-axes.flat[0].set_ylabel(r'$\log_{10}\sigma$')
-axes.flat[0].legend(title=r'$E_{\mu}$ (GeV)', ncol=2)
-fig.savefig('fit_params_{}.png'.format(the_geom))
-plt.close(fig)
-del fig, axes
+if args.do_plots:
+	# and now make plots
+	x = np.linspace(-1, 1, 101)
+	fig, axes = plt.subplots(2,1, sharex=True)
+	for i in range(2):
+		spl = splines[i]
+		for loge in 3, 4, 5, 6:
+			basis = splinebasis([[loge], x], spl['knots'], spl['order'])
+			axes.flat[i].plot(x, grideval(basis, spl['coefficients']).T, label='$10^{{{:.0f}}}$'.format(loge))
+	axes.flat[1].set_xlabel(r'$\cos\theta_{\rm zenith}$')
+	axes.flat[1].set_ylabel(r'$\log_{10}(\gamma-1)$')
+	axes.flat[0].set_ylabel(r'$\log_{10}\sigma$')
+	axes.flat[0].legend(title=r'$E_{\mu}$ (GeV)', ncol=2)
+	fig.savefig('fit_params_{}.png'.format(the_geom))
+	plt.close(fig)
+	del fig, axes
 
 # evaluate the parameterized CDF
 centers = [(e[1:]+e[:-1])/2 for e in bins[:-1]]
@@ -276,25 +278,26 @@ sigma, gamma_m1 = [grideval(splinebasis(centers, spl['knots'], spl['order']), sp
 psi = np.linspace(0, 10, 101)
 psf_vals = king_cdf(psi[None,...], 10**sigma[...,None], 10**(gamma_m1[...,None])+1)
 
-fig, ax = plt.subplots(1,1, figsize=(8,5))
-# compare the evaluated CDF to the source histogram
-ei = 5
-for ci in (0, 10, 20, 30, 39):
-	y = counts[ei,ci,:].cumsum()
-	line = ax.plot(*plotting.stepped_path(bins[2], y/y[-1]), label='({:.2f}, {:.2f}]'.format(*bins[1][ci:ci+2]))[0]
-	ax.plot(psi, psf_vals[ei,ci], color=line.get_color())
-	ax.set_xlim([0,4])
-	ax.set_xlabel(r'Angular error $\Psi_{\max}$ (degree)')
-	ax.set_ylabel(r'$P(\Psi < \Psi_{\max})$')
-	ax.legend(title=r'$\cos(\theta_{\rm zenith})$')
-	ax.set_title(
-		r'$E_{{\mu}} \in \rm [{}, {})$'.format(
-			*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
+if args.do_plots:
+	fig, ax = plt.subplots(1,1, figsize=(8,5))
+	# compare the evaluated CDF to the source histogram
+	ei = 5
+	for ci in (0, 10, 20, 30, 39):
+		y = counts[ei,ci,:].cumsum()
+		line = ax.plot(*plotting.stepped_path(bins[2], y/y[-1]), label='({:.2f}, {:.2f}]'.format(*bins[1][ci:ci+2]))[0]
+		ax.plot(psi, psf_vals[ei,ci], color=line.get_color())
+		ax.set_xlim([0,4])
+		ax.set_xlabel(r'Angular error $\Psi_{\max}$ (degree)')
+		ax.set_ylabel(r'$P(\Psi < \Psi_{\max})$')
+		ax.legend(title=r'$\cos(\theta_{\rm zenith})$')
+		ax.set_title(
+			r'$E_{{\mu}} \in \rm [{}, {})$'.format(
+				*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
+			)
 		)
-	)
-fig.savefig('angular_error_with_fits_{}.png'.format(the_geom))
-plt.close(fig)
-del fig, ax
+	fig.savefig('angular_error_with_fits_{}.png'.format(the_geom))
+	plt.close(fig)
+	del fig, ax
 
 # write to fit file
 def to_splinetable(spline_spec):
@@ -315,23 +318,24 @@ for label, spl in zip(('sigma', 'gamma'), splines):
 	to_splinetable(spl).write('kingpsf_{}.{}.fits'.format(the_geom,label))
 psf = SplineKingPointSpreadFunction(os.getcwd()+'/kingpsf_{}'.format(the_geom))
 
-# finally, check the difference between what we saved and what we loaded
-# through the gen2 framework
-fig, ax = plt.subplots(1,1, figsize=(8,5))
-ei = 5
-for ci in (0, 10, 20, 30, 39):
-	y = counts[ei,ci,:].cumsum()
-	from_fit = psf_vals[ei,ci]
-	from_function = psf(np.radians(psi), 10**centers[0][ei], centers[1][ci])
-	ax.plot(psi, from_fit-from_function, label='({:.2f}, {:.2f}]'.format(*bins[1][ci:ci+2]))
-	ax.set_xlim(0,4)
-	ax.set_xlabel(r'Angular error $\Psi_{\max}$ (degree)')
-	ax.set_ylabel(r'difference (fit-functor)')
-	ax.legend(title=r'$\cos(\theta_{\rm zenith})$')
-	ax.set_title(
-	r'$E_{{\mu}} \in \rm [{}, {})$'.format(
-		*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
+if args.do_plots:
+	# finally, check the difference between what we saved and what we loaded
+	# through the gen2 framework
+	fig, ax = plt.subplots(1,1, figsize=(8,5))
+	ei = 5
+	for ci in (0, 10, 20, 30, 39):
+		y = counts[ei,ci,:].cumsum()
+		from_fit = psf_vals[ei,ci]
+		from_function = psf(np.radians(psi), 10**centers[0][ei], centers[1][ci])
+		ax.plot(psi, from_fit-from_function, label='({:.2f}, {:.2f}]'.format(*bins[1][ci:ci+2]))
+		ax.set_xlim(0,4)
+		ax.set_xlabel(r'Angular error $\Psi_{\max}$ (degree)')
+		ax.set_ylabel(r'difference (fit-functor)')
+		ax.legend(title=r'$\cos(\theta_{\rm zenith})$')
+		ax.set_title(
+		r'$E_{{\mu}} \in \rm [{}, {})$'.format(
+			*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
+		)
 	)
-)
-fig.savefig('compare_orig_to_framework_{}.png'.format(the_geom))
+	fig.savefig('compare_orig_to_framework_{}.png'.format(the_geom))
 	
