@@ -317,8 +317,8 @@ def to_splinetable(spline_spec):
 print("Writing fits to file...")
 from gen2_analysis.angular_resolution import SplineKingPointSpreadFunction
 for label, spl in zip(('sigma', 'gamma'), splines):
-	to_splinetable(spl).write('kingpsf_{}.{}.fits'.format(the_geom,label))
-psf = SplineKingPointSpreadFunction(os.getcwd()+'/kingpsf_{}'.format(the_geom))
+	to_splinetable(spl).write('Sunflower_240_{}_kingpsf1.{}.fits'.format(the_geom,label))
+psf = SplineKingPointSpreadFunction(os.getcwd()+'/Sunflower_240_{}_kingpsf1'.format(the_geom))
 
 if args.do_plots:
 	# finally, check the difference between what we saved and what we loaded
@@ -410,7 +410,7 @@ fiducial_surface = surfaces.get_fiducial_surface('Sunflower', 240)
 seleff, seleff_err, edges = get_muon_selection_efficiency(dats, fiducial_surface, nfiles=1000)
 seleff_spline = fit_muon_selection_efficiency(seleff, seleff_err, edges)
 
-seleff_spline.write('muon_selection_efficiency_{}.fits'.format(the_geom))
+seleff_spline.write('11900_MUONGON_Sunflower_240m_{}_efficiency_cut.fits'.format(the_geom))
 
 if args.do_plots:
 
@@ -431,5 +431,6 @@ if args.do_plots:
 	ax.legend(title=r'$\cos\theta$', ncol=3)
 	ax.set_ylabel('Selection efficiency')
 	ax.set_xlabel('Muon energy at fiducial surface (GeV)')
+	ax.set_ylim([-0.1, 1.3])
 	fig.savefig('muon_selection_efficiency_{}.png'.format(the_geom))
 
