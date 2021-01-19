@@ -266,8 +266,10 @@ if args.do_plots:
 			axes.flat[i].plot(x, grideval(basis, spl['coefficients']).T, label='$10^{{{:.0f}}}$'.format(loge))
 	axes.flat[1].set_xlabel(r'$\cos\theta_{\rm zenith}$')
 	axes.flat[1].set_ylabel(r'$\log_{10}(\gamma-1)$')
+	axes.flat[1].set_ylim([-0.7,-0.1])
 	axes.flat[0].set_ylabel(r'$\log_{10}\sigma$')
 	axes.flat[0].legend(title=r'$E_{\mu}$ (GeV)', ncol=2)
+	axes.flat[0].set_ylim([-1.5,0.5])
 	fig.savefig('fit_params_{}.png'.format(the_geom))
 	plt.close(fig)
 	del fig, axes
