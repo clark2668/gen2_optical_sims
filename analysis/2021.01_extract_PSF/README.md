@@ -7,13 +7,13 @@ We need a script to extract the PSF function from the hdf5 file. We need to have
 ## Results
 
 Tabulate angular error
-![](angular_error.png)
+![](angular_error_standard.png)
 
 Tabulated angular error with the King/Moffat fits
-![](angular_error_with_fits.png)
+![](angular_error_with_fits_standard.png)
 
 The fit parameters
-![](fit_params.png )
+![](fit_params_standard.png )
 
 Comparisons of the fits to what we get when we load the fits into the Gen2 framework and then get them back out again.
-![](compare_orig_to_framework.png)
+![](compare_orig_to_framework_standard.png)

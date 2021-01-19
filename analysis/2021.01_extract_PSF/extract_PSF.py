@@ -13,6 +13,15 @@ import autograd.numpy as n
 import os
 import h5py
 
+import argparse
+parser = argparse.ArgumentParser() 
+parser.add_argument("-n",type=str,help="geom name, e.g. darren", required=False, dest='geom', default='standard')
+args = parser.parse_args()
+the_geom = args.geom
+the_file = 'data_sunflower_{}.hdf5'.format(the_geom)
+print("the file {}".format(the_file))
+
+
 @memoize
 def load_dataset(hdf_fname):
 	dfs = {}
@@ -52,7 +61,7 @@ def load_dataset(hdf_fname):
 	return dats
 
 
-dats = load_dataset('save_all_orig_reco.GEN2.hdf5')
+dats = load_dataset(the_file)
 
 # just see what we're working with in terms of statistics
 print(dats.describe())
@@ -77,7 +86,7 @@ for ci in (0, 10, 15, 30, 39):
 			*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
 		)
 	)
-fig.savefig('angular_error.png')
+fig.savefig('angular_error_{}.png'.format(the_geom))
 plt.close(fig)
 del fig, ax
 
@@ -257,7 +266,7 @@ axes.flat[1].set_xlabel(r'$\cos\theta_{\rm zenith}$')
 axes.flat[1].set_ylabel(r'$\log_{10}(\gamma-1)$')
 axes.flat[0].set_ylabel(r'$\log_{10}\sigma$')
 axes.flat[0].legend(title=r'$E_{\mu}$ (GeV)', ncol=2)
-fig.savefig('fit_params.png')
+fig.savefig('fit_params_{}.png'.format(the_geom))
 plt.close(fig)
 del fig, axes
 
@@ -283,7 +292,7 @@ for ci in (0, 10, 20, 30, 39):
 			*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
 		)
 	)
-fig.savefig('angular_error_with_fits.png')
+fig.savefig('angular_error_with_fits_{}.png'.format(the_geom))
 plt.close(fig)
 del fig, ax
 
@@ -303,8 +312,8 @@ def to_splinetable(spline_spec):
 print("Writing fits to file...")
 from gen2_analysis.angular_resolution import SplineKingPointSpreadFunction
 for label, spl in zip(('sigma', 'gamma'), splines):
-	to_splinetable(spl).write('kingpsf.{}.fits'.format(label))
-psf = SplineKingPointSpreadFunction(os.getcwd()+'/kingpsf')
+	to_splinetable(spl).write('kingpsf_{}.{}.fits'.format(the_geom,label))
+psf = SplineKingPointSpreadFunction(os.getcwd()+'/kingpsf_{}'.format(the_geom))
 
 # finally, check the difference between what we saved and what we loaded
 # through the gen2 framework
@@ -324,5 +333,5 @@ for ci in (0, 10, 20, 30, 39):
 		*([plotting.format_energy(r"{%.1f \,}", e) for e in 10**bins[0][ei:ei+2]])
 	)
 )
-fig.savefig('compare_orig_to_framework.png')
+fig.savefig('compare_orig_to_framework_{}.png'.format(the_geom))
 	
