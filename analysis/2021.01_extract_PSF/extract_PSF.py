@@ -3,7 +3,7 @@ import tables
 import pandas as pd
 import numpy as np
 from toolz import memoize
-from gen2_analysis import plotting
+from gen2_analysis import plotting, surfaces
 
 import photospline
 from scipy import optimize
@@ -340,4 +340,96 @@ if args.do_plots:
 		)
 	)
 	fig.savefig('compare_orig_to_framework_{}.png'.format(the_geom))
+
+
+# and now, the muon selection efficiency
+def get_muon_selection_efficiency(
+	dataframe,
+	fiducial_surface,
+	nfiles=1000,
+	cos_theta=np.linspace(-1, 1, 21),
+	energy=np.logspace(2, 11, 46)
+):
+	edges = [energy, cos_theta]
+	sample = np.vstack((dats['energy'], dats['cos_zenith'])).T
+	weights = dats['aeff']/nfiles
+	counts = np.histogramdd(sample, bins=edges)[0]
+
+	bincontent, _ = np.histogramdd(sample, weights=weights, bins=edges)
+	squaredweights, _ = np.histogramdd(sample, weights=weights**2, bins=edges)
 	
+	# convert GeV m^2 sr to m^2
+	bin_volume = 2*np.pi*np.outer(*map(np.diff, edges))
+	# normalize to geometric area
+	geometric_area = np.vectorize(fiducial_surface.average_area)(edges[1][:-1], edges[1][1:])[None,:]
+
+	binerror = np.sqrt(squaredweights)
+	for target in bincontent, binerror:
+		target /= bin_volume
+		target /= geometric_area
+	
+	return bincontent, binerror, edges
+
+def fit_muon_selection_efficiency(efficiency, error, binedges, smoothing=1):
+	from gen2_analysis.util import center
+   
+	def pad_knots(knots, order=2):
+		"""
+		Pad knots out for full support at the boundaries
+		"""
+		pre = knots[0] - (knots[1]-knots[0])*np.arange(order, 0, -1)
+		post = knots[-1] + (knots[-1]-knots[-2])*np.arange(1, order+1)
+		return np.concatenate((pre, knots, post))
+
+	z = efficiency
+	w = 1./error**2
+	
+	for i in range(z.shape[1]):
+		# deweight empty declination bands
+		if not (z[:,i] > 0).any():
+			w[:,i] = 0
+			continue
+		# extrapolate efficiency with a constant
+		last = np.where(z[:,i] > 0)[0][-1]
+		zlast = z[last-10:last,i]
+		mask = zlast != 0
+		w[last:,i] = 1./((error[last-10:last,i][mask]**2).mean())
+		z[last:,i] = zlast[mask].mean()
+		first = np.where(z[:,i] > 0)[0][0]
+		w[:first,i] = 1./((error[first:first+10,i]**2).mean())
+	w[~np.isfinite(w) | ~np.isfinite(z)] = 0
+	centers = [center(np.log10(binedges[0])), center(binedges[1])]
+	knots = [pad_knots(np.log10(binedges[0]), 2), pad_knots(binedges[1], 2)]
+	order = [2,2]
+	z, w = photospline.ndsparse.from_data(z, w)
+	spline = photospline.glam_fit(z, w, centers, knots, order, smoothing=[5*smoothing, 10*smoothing], penaltyOrder=[2,2])
+	
+	return spline
+
+fiducial_surface = surfaces.get_fiducial_surface('Sunflower', 240)
+seleff, seleff_err, edges = get_muon_selection_efficiency(dats, fiducial_surface, nfiles=1000)
+seleff_spline = fit_muon_selection_efficiency(seleff, seleff_err, edges)
+
+seleff_spline.write('muon_selection_efficiency_{}.fits'.format(the_geom))
+
+if args.do_plots:
+
+	fig, ax = plt.subplots(1,1,figsize=(8,5))
+	for ci in 5, 10, 15:
+		
+		x = np.linspace(2, 11, 101)
+		y = seleff_spline.grideval([x, [(edges[1][ci]+edges[1][ci+1])/2.]]).squeeze()
+		line = ax.plot(10**x, y)[0]
+		
+		x = 10**((np.log10(edges[0][1:]) + np.log10(edges[0][:-1]))/2.)
+		xerr = edges[0][1:]-x, x-edges[0][:-1]
+		y = seleff[:,ci]
+		yerr = seleff_err[:,ci]
+		line = ax.errorbar(x, y, xerr=xerr, yerr=yerr, ls='None', label=r'[${}$,${}$)'.format(edges[1][ci], edges[1][ci+1]), color=line.get_color())
+
+	ax.semilogx()
+	ax.legend(title=r'$\cos\theta$', ncol=3)
+	ax.set_ylabel('Selection efficiency')
+	ax.set_xlabel('Muon energy at fiducial surface (GeV)')
+	fig.savefig('muon_selection_efficiency_{}.png'.format(the_geom))
+
