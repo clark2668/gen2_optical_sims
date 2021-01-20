@@ -255,15 +255,16 @@ def fit_psf(bins, counts, nknots=(7,10), smooth=1e1):
 print("About to fit PSFs")
 splines = fit_psf(bins, counts, smooth=1)
 
+# and now make plots
+x = np.linspace(-1, 1, 101)
+fig, axes = plt.subplots(2,1, sharex=True)
+for i in range(2):
+	spl = splines[i]
+	for loge in 3, 4, 5, 6:
+		basis = splinebasis([[loge], x], spl['knots'], spl['order'])
+		axes.flat[i].plot(x, grideval(basis, spl['coefficients']).T, label='$10^{{{:.0f}}}$'.format(loge))
+
 if args.do_plots:
-	# and now make plots
-	x = np.linspace(-1, 1, 101)
-	fig, axes = plt.subplots(2,1, sharex=True)
-	for i in range(2):
-		spl = splines[i]
-		for loge in 3, 4, 5, 6:
-			basis = splinebasis([[loge], x], spl['knots'], spl['order'])
-			axes.flat[i].plot(x, grideval(basis, spl['coefficients']).T, label='$10^{{{:.0f}}}$'.format(loge))
 	axes.flat[1].set_xlabel(r'$\cos\theta_{\rm zenith}$')
 	axes.flat[1].set_ylabel(r'$\log_{10}(\gamma-1)$')
 	axes.flat[1].set_ylim([-0.7,-0.1])
@@ -272,7 +273,7 @@ if args.do_plots:
 	axes.flat[0].set_ylim([-1.5,0.5])
 	fig.savefig('fit_params_{}.png'.format(the_geom))
 	plt.close(fig)
-	del fig, axes
+del fig, axes
 
 # evaluate the parameterized CDF
 centers = [(e[1:]+e[:-1])/2 for e in bins[:-1]]
