@@ -15,7 +15,7 @@ import h5py
 
 import argparse
 parser = argparse.ArgumentParser() 
-parser.add_argument("-n",type=str,help="geom name, e.g. darren", required=False, dest='geom', default='standard')
+parser.add_argument("-n",type=str,help="geom name, e.g. hcr", required=False, dest='geom', default='standard')
 parser.add_argument("-p",type=bool,help="make plots?", required=False, dest='do_plots', default=False)
 args = parser.parse_args()
 the_geom = args.geom
@@ -318,8 +318,8 @@ def to_splinetable(spline_spec):
 print("Writing fits to file...")
 from gen2_analysis.angular_resolution import SplineKingPointSpreadFunction
 for label, spl in zip(('sigma', 'gamma'), splines):
-	to_splinetable(spl).write('Sunflower_240_{}_kingpsf1.{}.fits'.format(the_geom,label))
-psf = SplineKingPointSpreadFunction(os.getcwd()+'/Sunflower_240_{}_kingpsf1'.format(the_geom))
+	to_splinetable(spl).write('Sunflower_{}_240_kingpsf1.{}.fits'.format(the_geom,label))
+psf = SplineKingPointSpreadFunction(os.getcwd()+'/Sunflower_{}_240_kingpsf1'.format(the_geom))
 
 if args.do_plots:
 	# finally, check the difference between what we saved and what we loaded
@@ -407,11 +407,11 @@ def fit_muon_selection_efficiency(efficiency, error, binedges, smoothing=1):
 	
 	return spline
 
-fiducial_surface = surfaces.get_fiducial_surface('Sunflower', 240)
+fiducial_surface = surfaces.get_fiducial_surface('Sunflower_{}'.format(the_geom), 240)
 seleff, seleff_err, edges = get_muon_selection_efficiency(dats, fiducial_surface, nfiles=1000)
 seleff_spline = fit_muon_selection_efficiency(seleff, seleff_err, edges)
 
-seleff_spline.write('11900_MUONGON_Sunflower_240m_{}_efficiency_cut.fits'.format(the_geom))
+seleff_spline.write('11900_MUONGUN_Sunflower_{}_240m_efficiency_cut.fits'.format(the_geom))
 
 if args.do_plots:
 
