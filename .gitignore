@@ -3,3 +3,4 @@
 *.dag.*
 *.dag
 *.fits
+*.DS_Store
