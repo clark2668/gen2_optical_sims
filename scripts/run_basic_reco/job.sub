@@ -1,9 +1,9 @@
-log    = /scratch/brianclark/gen2opticalsims/trash/reco.$(design).$(dataset).$(part).log
-output = /scratch/brianclark/gen2opticalsims/trash/reco.$(design).$(dataset).$(part).out
-error  = /scratch/brianclark/gen2opticalsims/trash/reco.$(design).$(dataset).$(part).err
+log    = /scratch/brianclark/gen2opticalsims/trash/reco.$(design).$(mod).$(dataset).$(part).log
+output = /scratch/brianclark/gen2opticalsims/trash/reco.$(design).$(mod).$(dataset).$(part).out
+error  = /scratch/brianclark/gen2opticalsims/trash/reco.$(design).$(mod).$(dataset).$(part).err
 
 request_cpus = 1
-request_memory = 4GB
+request_memory = 6GB
 request_disk = 2GB
 Universe = vanilla
 getenv = true
