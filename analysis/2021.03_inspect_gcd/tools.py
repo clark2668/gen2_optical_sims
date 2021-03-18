@@ -2,7 +2,8 @@ from icecube import icetray, dataclasses
 import matplotlib.pyplot as plt
 import numpy as np
 
-def inspect_G_frame(frame, save_plot=False):
+def inspect_G_frame(frame, save_plot=False,
+	title_mod=None):
 	geo = frame['I3Geometry'].omgeo
 
 	om_strings = []
@@ -49,7 +50,7 @@ def inspect_G_frame(frame, save_plot=False):
 		axs.grid()
 		axs.set_ylim([-2800, -1200])
 		plt.tight_layout()
-		fig.savefig('om_map.png')
+		fig.savefig('om_map_{}.png'.format(title_mod))
 
 		del fig, axs
 
@@ -63,5 +64,5 @@ def inspect_G_frame(frame, save_plot=False):
 		axs.grid()
 		# axs.set_ylim([-2800, -1200])
 		plt.tight_layout()
-		fig.savefig('top_down.png')
+		fig.savefig('top_down_{}.png'.format(title_mod))
 
