@@ -1,5 +1,6 @@
 from icecube import icetray, dataclasses
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 import numpy as np
 
 def inspect_G_frame(frame, save_plot=False,
@@ -43,27 +44,35 @@ def inspect_G_frame(frame, save_plot=False,
 
 	if save_plot:
 
+		# setup the axes
+		fig = plt.figure(figsize=(30,10))
+		gs = gridspec.GridSpec(1,2,width_ratios=[1,2])
+		ax1 = plt.subplot(gs[1])
+		ax0 = plt.subplot(gs[0])
+
 		# top down
-		fig, axs = plt.subplots(1,1,figsize=(20,10))
-		axs.plot(om_strings, om_depths, 'o', markersize=3)
-		axs.set_xlabel('String Number')
-		axs.set_ylabel('Depth')
-		axs.grid()
-		axs.set_ylim([-2800, -1200])
-		plt.tight_layout()
-		fig.savefig('om_map_{}.png'.format(title_mod))
+		ax0.plot(om_x[:86], om_y[:86], 'o', markersize=4, label='IceCube')
+		ax0.plot(om_x[86:], om_y[86:], 's', markersize=4, label='Gen2')
+		ax0.set_xlabel('X [m]', size=15)
+		ax0.set_ylabel('Y [m]', size=15)
+		ax0.set_aspect('equal')
+		ax0.tick_params(axis='both', labelsize=15)
+		ax0.legend(fontsize=15)
+		ax0.set_title('Top Down View', fontsize=15)
+		ax0.grid()
 
-		del fig, axs
+		# side view
+		ax1.plot(om_strings[:5160], om_depths[:5160], 'o', markersize=3)
+		ax1.plot(om_strings[5160:], om_depths[5160:], 's', markersize=3)
+		ax1.set_xlabel('String Number', size=15)
+		ax1.set_ylabel('Depth', size=15)
+		ax1.set_xticklabels(labels=['', '0', '50', '1000', '1150', '1200'])
+		ax1.tick_params(axis='both', labelsize=15)
+		ax1.set_ylim([-2800, -1200])
+		ax1.set_title('Side View', fontsize=15)
+		ax1.grid()
 
-		fig, axs = plt.subplots(1,1,figsize=(10,10))
-		axs.plot(om_x[:86], om_y[:86], 'o', markersize=4, label='IceCube')
-		axs.plot(om_x[86:], om_y[86:], 's', markersize=4, label='Gen2')
-		axs.set_xlabel('X [m]')
-		axs.set_ylabel('Y [m]')
-		axs.set_aspect('equal')
-		axs.legend()
-		axs.grid()
-		# axs.set_ylim([-2800, -1200])
+		# save plot
 		plt.tight_layout()
-		fig.savefig('top_down_{}.png'.format(title_mod))
+		fig.savefig('layout_{}.png'.format(title_mod), dpi=300)
 
