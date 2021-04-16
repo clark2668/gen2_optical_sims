@@ -20,7 +20,7 @@ def inspect_G_frame(frame, save_plot=False,
 			continue
 		om_strings.append(omkey.string)
 		om_depths.append(omgeo.position.z)
-		# print('Omkey {}, type {}'.format(omkey, omgeo.omtype))
+		print('Omkey {}, type {}'.format(omkey, omgeo.omtype))
 
 		if omkey.om ==1:
 			if omkey.string not in finished:
