@@ -6,6 +6,7 @@ import numpy as np
 def inspect_G_frame(frame, save_plot=False,
 	title_mod=None):
 	geo = frame['I3Geometry'].omgeo
+	cal = frame['I3Calibration']
 
 	om_strings = []
 	om_depths = []
@@ -21,7 +22,11 @@ def inspect_G_frame(frame, save_plot=False,
 			continue
 		om_strings.append(omkey.string)
 		om_depths.append(omgeo.position.z)
-		print('Omkey {}, type {}, loc {}'.format(omkey, omgeo.omtype, omgeo.position))
+		eff = -10
+		if omkey in cal.dom_cal:
+			eff = cal.dom_cal[omkey].relative_dom_eff
+		print('Omkey {}, type {}, loc {}, eff {}'.format(omkey, 
+			omgeo.omtype, omgeo.position, eff))
 
 		if omkey.om ==1:
 			if omkey.string not in finished:

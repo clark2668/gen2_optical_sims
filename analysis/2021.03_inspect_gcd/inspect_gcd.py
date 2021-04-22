@@ -18,8 +18,8 @@ tray = I3Tray()
 tray.AddModule("I3Reader", filename=args.gcd)
 
 tray.AddModule(tools.inspect_G_frame, "inpsect_G",
-	save_plot=True,
-	Streams=[icetray.I3Frame.Geometry],
+	save_plot=False,
+	Streams=[icetray.I3Frame.DetectorStatus],
 	title_mod=args.title_mod,
 	)
 
