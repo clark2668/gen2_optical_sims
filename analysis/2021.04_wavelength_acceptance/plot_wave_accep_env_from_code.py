@@ -28,7 +28,7 @@ maxwlen = acc_icecube.GetMaxWlen()
 wlen = np.arange(minwlen, maxwlen+steplen, steplen)
 
 values_icecube = []
-values_icecube_hqe = []C
+values_icecube_hqe = []
 values_mdom = []
 values_degg = []
 envelope = []
@@ -46,18 +46,19 @@ wlen/=1e-9
 # make plots
 
 fig, ax = plt.subplots(1,1,figsize=(7,5))
-thewidth=2
-# ax.plot(wlen, values_icecube, label='IceCube', linewidth=thewidth)
-# ax.plot(wlen, values_icecube_hqe, label='PDOM = IceCube HQE', linewidth=thewidth)
+thewidth=3
+ax.plot(wlen, values_icecube, label='IceCube', linewidth=thewidth)
+ax.plot(wlen, values_icecube_hqe, label='PDOM = IceCube HQE', linewidth=thewidth)
 # ax.plot(wlen, values_mdom, label='mDOM', linewidth=thewidth)
 # ax.plot(wlen, values_degg, label='D-Egg', linewidth=thewidth)
-ax.plot(wlen, envelope, 'k', label='Envelope')
-# ax.plot(wlen, envelope_icecube, 'k--', label='Envelope')
+# ax.plot(wlen, envelope, 'k', label='Envelope')
+ax.plot(wlen, envelope_icecube, 'k--', label='Envelope')
 # ax.set_title('V3 GCD')
-ax.set_xlabel('Wavelength [nm]')
-ax.set_ylabel(r'Acceptance [m$^2$]')
-ax.set_ylim([-0.01, 0.6])
-ax.legend()
+ax.set_xlabel('Wavelength [nm]',fontsize=15)
+ax.set_ylabel(r'Acceptance',fontsize=15)
+ax.set_ylim([-0.01, 0.2])
+ax.legend(fontsize=12) 
+ax.tick_params(labelsize=15)
 ax.grid()
 plt.tight_layout()
 fig.savefig('envelopes.png', dpi=300)
