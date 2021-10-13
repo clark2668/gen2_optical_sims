@@ -48,7 +48,7 @@ wlen/=1e-9
 fig, ax = plt.subplots(1,1,figsize=(7,5))
 thewidth=3
 ax.plot(wlen, values_icecube, label='IceCube', linewidth=thewidth)
-ax.plot(wlen, values_icecube_hqe, label='PDOM = IceCube HQE', linewidth=thewidth)
+ax.plot(wlen, values_icecube_hqe, label='IceCube HQE', linewidth=thewidth)
 # ax.plot(wlen, values_mdom, label='mDOM', linewidth=thewidth)
 # ax.plot(wlen, values_degg, label='D-Egg', linewidth=thewidth)
 # ax.plot(wlen, envelope, 'k', label='Envelope')
