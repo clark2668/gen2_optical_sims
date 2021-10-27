@@ -2,7 +2,7 @@
 
 design = 'Sunflower_240m'
 dataset = 11900
-mod='sigma1'
+mod='sigma3'
 
 source_dir = "/data/wipac/HEE/simulation/level2/no-domsim/"
 output_dir = "/data/user/brianclark/Gen2_optical/gcd_errors/recos/{}".format(mod)
