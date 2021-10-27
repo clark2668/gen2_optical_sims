@@ -58,9 +58,12 @@ class PerturbStrings(icetray.I3Module):
             old_y = g.position.y
             new_x = old_x + dX
             new_y = old_y + dY
-            g.position.x = new_x
-            g.position.y = new_y
+            g_new = copy.copy(g)
+            g_new.position.x = new_x
+            g_new.position.y = new_y
             # print('Old {:.2f}, {:.2f}, New {:.2f}, {:.2f}'.format(old_x, old_y, g.position.x, g.position.y))
+            omgeo[omkey] = g_new
+            print('Old {:.2f}, {:.2f}, New {:.2f}, {:.2f}'.format(old_x, old_y, omgeo[omkey].position.x, omgeo[omkey].position.y))
 
         del frame['I3Geometry'] # remove the old I3Geometry out of the frame
         frame['I3Geometry'] = geo # put the new one in place

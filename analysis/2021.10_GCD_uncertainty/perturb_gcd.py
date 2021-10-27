@@ -5,7 +5,7 @@ from I3Tray import I3Tray
 from icecube import icetray, dataio, dataclasses, hdfwriter
 from tools import perturb_strings
 
-config_filename = 'uncertainties_1.pkl'
+config_filename = 'uncertainties_3.pkl'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i","--infile",type=str,help="Input GCD File",required=True,dest="infile")

@@ -6,7 +6,7 @@ ss = SeedSequence(seed)
 bit_generator = PCG64(ss)
 rng = np.random.default_rng(bit_generator)
 
-sigma = 2 # meters
+sigma = 3 # meters
 
 uncertainties = {}
 dRs = []
@@ -32,8 +32,8 @@ plt.savefig('dist.png')
 # count, bins, ignored = plt.hist(dPhis, 30, density=True)
 # plt.savefig('dist.png')
 
-# import pickle
-# outfile = 'uncertainties_{}.pkl'.format(sigma)
-# with open(outfile, "wb") as fout:
-#     pickle.dump(uncertainties, fout, protocol=4)
+import pickle
+outfile = 'uncertainties_{}.pkl'.format(sigma)
+with open(outfile, "wb") as fout:
+    pickle.dump(uncertainties, fout, protocol=4)
 
